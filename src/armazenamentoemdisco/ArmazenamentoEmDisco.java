@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -69,25 +70,33 @@ public class ArmazenamentoEmDisco {
     public static void createBinaryFile() {
         System.out.println("\n Digite o nome do novo Arquivo: ");
         String nomeDoArquivo = entrada.next();
-        File arquivo = new File(nomeDoArquivo.substring(0, nomeDoArquivo.length() - 4) + ".txt");//cria o novo arquivo.txt
+        File arquivoSql = new File(nomeDoArquivo);//cria o novo arquivo.txt
+        File arquivoBinario = new File(nomeDoArquivo.substring(0, nomeDoArquivo.length() - 4) + ".txt");
 //        files.add(arquivo);
+//nomeDoArquivo.substring(0, nomeDoArquivo.length() - 4) + ".txt"
+        FileReader f = null;
         try {
-            inputStream = new FileInputStream(arquivo);
-            outputStream = new FileOutputStream(arquivo);
+            f = new FileReader(arquivoSql);
+            outputStream = new FileOutputStream(arquivoBinario);
         } catch (FileNotFoundException ex) {
             Logger.getLogger(ArmazenamentoEmDisco.class.getName()).log(Level.SEVERE, null, ex);
         }
-        inputBuffer = new BufferedInputStream(inputStream);
+        BufferedReader bufer = new BufferedReader(f);
         outputBuffer = new BufferedOutputStream(outputStream);
         byte[] buffer = new byte[2 * 1024]; // cria o arquivo com 2kb
         try {
             outputBuffer.write(buffer);
             outputBuffer.flush();
-            //escreve o lixo no arquivo;
+            System.out.println("Deu certo");
+//            outputBuffer.close();
+//            outputStream.close();
 
+            //escreve o lixo no arquivo;
         } catch (IOException ex) {
             Logger.getLogger(ArmazenamentoEmDisco.class.getName()).log(Level.SEVERE, null, ex);
         }
+
+        createEstruturaNoArquivo(bufer, outputBuffer);
 
     }
 
@@ -101,6 +110,29 @@ public class ArmazenamentoEmDisco {
 
     public static void removeRegister() {
         System.out.println("\n Digite o nome do registro a ser removido: ");
+    }
+
+    private static void createEstruturaNoArquivo(BufferedReader inputBuffer, BufferedOutputStream outputBuffer) {
+        String linha;
+        String estrutura;
+        String nomeDaTabela;
+        ArrayList<String> campos = new ArrayList<>();
+        try {
+            while ((linha = inputBuffer.readLine()) != null) {
+                System.out.println(linha);
+                if (linha.contains("CREATE TABLE")) {
+                    linha.
+
+                }
+                if(linha.contains(linha))
+//                if()
+//                estrutura +=linha;
+
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(ArmazenamentoEmDisco.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
 
 }

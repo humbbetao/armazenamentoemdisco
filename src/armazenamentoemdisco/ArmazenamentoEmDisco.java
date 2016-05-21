@@ -5,17 +5,102 @@
  */
 package armazenamentoemdisco;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author humbe
  */
 public class ArmazenamentoEmDisco {
 
-    /**
-     * @param args the command line arguments
-     */
+    static ArrayList<File> files;
+    static FileInputStream inputStream;
+    static FileOutputStream outputStream;
+    static BufferedOutputStream outputBuffer;
+    static BufferedInputStream inputBuffer;
+    static Scanner entrada;
+
     public static void main(String[] args) {
         // TODO code application logic here
+        entrada = new Scanner(System.in);
+        int numero = 0;
+        while (true) {
+            System.out.println("Digite 1, 2, 3 ou 4 para selecionar uma opcao abaixo: \n"
+                    + "1 - Criar Arquivo;\n"
+                    + "2 - Inserir Registros;\n"
+                    + "3 - Listar Registros;\n"
+                    + "4 - Excluir Registros.\n");
+            try {
+                numero = entrada.nextInt();
+            } catch (NumberFormatException ex) {
+                System.out.println("Erro de Entrada, Digite novamente\n");
+            }
+            switch (numero) {
+                case 1:
+                    createBinaryFile();
+                    break;
+                case 2:
+                    insertRegister();
+                    break;
+                case 3:
+                    listRegister();
+                    break;
+                case 4:
+                    removeRegister();
+                    break;
+                default:
+                    System.out.println("Erro, Entrada Invalida\n");
+                    break;
+            }
+        }
     }
-    
+
+    public static void createBinaryFile() {
+        System.out.println("\n Digite o nome do novo Arquivo: ");
+        String nomeDoArquivo = entrada.next();
+        File arquivo = new File(nomeDoArquivo.substring(0, nomeDoArquivo.length() - 4) + ".txt");//cria o novo arquivo.txt
+//        files.add(arquivo);
+        try {
+            inputStream = new FileInputStream(arquivo);
+            outputStream = new FileOutputStream(arquivo);
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(ArmazenamentoEmDisco.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        inputBuffer = new BufferedInputStream(inputStream);
+        outputBuffer = new BufferedOutputStream(outputStream);
+        byte[] buffer = new byte[2 * 1024]; // cria o arquivo com 2kb
+        try {
+            outputBuffer.write(buffer);
+            outputBuffer.flush();
+            //escreve o lixo no arquivo;
+
+        } catch (IOException ex) {
+            Logger.getLogger(ArmazenamentoEmDisco.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    public static void insertRegister() {
+        System.out.println("\n Digite o nome do novo registro: ");
+    }
+
+    public static void listRegister() {
+        System.out.println("\n Listando... ");
+    }
+
+    public static void removeRegister() {
+        System.out.println("\n Digite o nome do registro a ser removido: ");
+    }
+
 }

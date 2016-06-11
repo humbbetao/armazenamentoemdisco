@@ -14,10 +14,14 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -68,8 +72,9 @@ public class ArmazenamentoEmDisco {
     }
 
     public static void createBinaryFile() {
-        System.out.println("\n Digite o nome do novo Arquivo: ");
-        String nomeDoArquivo = entrada.next();
+//        System.out.println("\n Digite o nome do novo Arquivo: ");
+//        String nomeDoArquivo = entrada.next();
+        String nomeDoArquivo = "createSql.sql";
         File arquivoSql = new File(nomeDoArquivo);//cria o novo arquivo.txt
         File arquivoBinario = new File(nomeDoArquivo.substring(0, nomeDoArquivo.length() - 4) + ".txt");
 //        files.add(arquivo);
@@ -114,21 +119,57 @@ public class ArmazenamentoEmDisco {
 
     private static void createEstruturaNoArquivo(BufferedReader inputBuffer, BufferedOutputStream outputBuffer) {
         String linha;
-        String estrutura;
-        String nomeDaTabela;
+        String estrutura = "";
         ArrayList<String> campos = new ArrayList<>();
         try {
             while ((linha = inputBuffer.readLine()) != null) {
-                System.out.println(linha);
-                if (linha.contains("CREATE TABLE")) {
-                    linha.
-
-                }
-                if(linha.contains(linha))
-//                if()
-//                estrutura +=linha;
-
+                estrutura += linha;
             }
+            String inputString = estrutura.replaceAll("\t", "");
+            inputString = inputString.replaceAll("\n", "");
+            String[] createTablesDiferentes = inputString.split("\\;");
+            for (String s : createTablesDiferentes) {
+                String[] create = estrutura.split("CREATE TABLE");
+                String[] nomeDaTabela = create[1].split("\\(", 2);
+                System.out.println(nomeDaTabela[1]);
+                nomeDaTabela[1] = nomeDaTabela[1].replaceAll(",", "");
+                String[] itensDaTabela = nomeDaTabela[1].split(" ");
+                System.out.println("itens " + Arrays.toString(itensDaTabela));
+                criarEstruturaDoArquivo(nomeDaTabela[0], itensDaTabela);
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(ArmazenamentoEmDisco.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private static void criarEstruturaDoArquivo(String string, String[] itensDaTabela) {
+        criarCabecalho();
+    }
+
+    private static void criarCabecalho() {
+        int numeroDeItensArmazenados = 0;
+        int quantidadeDeItensExcluidos = 0;
+        int deslocamentoParaPrimeiroByteLivre = (byte) (((2 * 1024) / 8) - 6);
+        int delocamentoParaOPrimeiroRegistro = (byte) (((2 * 1024) / 8) - 8);
+        //conta para deslocamento até o ultimo byte;
+        try {
+
+            String nomeDoArquivo = "createSql.txt";
+            RandomAccessFile raf = new RandomAccessFile(nomeDoArquivo, "rw");//cria o novo arquivo.txt
+
+//            byte[] buffer = new byte[2 * 1024]; // cria o arquivo 
+            raf.write(new byte[1]);
+            raf.write((byte)numeroDeItensArmazenados);
+            raf.write(new byte[1]);
+            raf.write((byte)quantidadeDeItensExcluidos);
+            raf.write(new byte[1]);
+            raf.write((byte)deslocamentoParaPrimeiroByteLivre);
+            raf.write(new byte[1]);
+            raf.write((byte)delocamentoParaOPrimeiroRegistro);
+//            raf.flush();
+            raf.close();
+
         } catch (IOException ex) {
             Logger.getLogger(ArmazenamentoEmDisco.class.getName()).log(Level.SEVERE, null, ex);
         }

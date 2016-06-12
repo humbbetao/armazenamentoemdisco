@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package armazenamentoemdisco;
 
 import com.sun.org.apache.xalan.internal.xsltc.compiler.util.StringStack;
@@ -231,10 +226,7 @@ public class ArmazenamentoEmDisco {
                 raf.writeShort(deslocamentoParaPrimeiroByteLivre);
 //                raf.write(new byte[1]);
 //                raf.writeShort(delocamentoParaOPrimeiroRegistro);
-<<<<<<< HEAD
                 raf.write((byte) '.');
-=======
->>>>>>> 3bcbc8b90b44cc00d2207ffeb59aeab439d09bf5
 //            raf.flush();
                 raf.close();
                 //escreve no arquivo o cabecalho
@@ -354,11 +346,7 @@ public class ArmazenamentoEmDisco {
                         numeroOriginal += 2;
 //                        System.out.println("estaaqui");
                     }
-<<<<<<< HEAD
                     randomAccess.seek(numeroOriginal -= 2);
-=======
-                    randomAccess.seek(numeroOriginal-=2);
->>>>>>> 3bcbc8b90b44cc00d2207ffeb59aeab439d09bf5
                     tamanhoTotalLivre = randomAccess.readShort();
                 }
                 System.out.println("tamanhododadoslivre" + tamanhoTotalLivre);
@@ -368,17 +356,11 @@ public class ArmazenamentoEmDisco {
                 for (int i = 0; i < dadosprontos.length; i++) {
                     String[] d = dadosprontos[i].split("");
 //                    System.out.println(Arrays.toString(d) + "FOi");
-<<<<<<< HEAD
                     randomAccess.write((byte) ';');
                     for (int k = 0; k < d.length; k++) {
 //                        randomAccess.write(new byte[1]);6
                         randomAccess.write(d[k].getBytes());
 
-=======
-                    for (int k = 0; k < d.length; k++) {
-//                        randomAccess.write(new byte[1]);6
-                        randomAccess.write(d[k].getBytes());
->>>>>>> 3bcbc8b90b44cc00d2207ffeb59aeab439d09bf5
                     }
 
                     //randomAccess.write((byte)',');
@@ -404,32 +386,7 @@ public class ArmazenamentoEmDisco {
 //                    System.out.println("Estaaqui2");
 //                    randomAccess.seek(numeroOriginal);
                 }
-<<<<<<< HEAD
                 randomAccess.seek(numeroOriginal -= 2);
-=======
-
-                String novaDeEscrita = "";
-//                System.out.println(" foi");
-                randomAccess.seek(0);
-                //atualizao o numero de arquivos salvos;
-                short numeroDeRegistroSalvos = randomAccess.readShort();
-                randomAccess.seek(0);
-                randomAccess.writeShort(numeroDeRegistroSalvos++);
-                randomAccess.seek(4);
-                short deslocamentoParaoPrimeiroByteLivre = randomAccess.readShort();
-                randomAccess.seek(4);
-                randomAccess.writeShort((tamanhoTotalLivre - tamanhoDosDados));
-//                randomAccess.seek(6);
-                short numeroOriginal = 6;
-                short zero = 0;
-                randomAccess.seek(numeroOriginal);
-                while (randomAccess.readShort() != zero) {
-                    numeroOriginal += 2;
-//                    System.out.println("Estaaqui2");
-//                    randomAccess.seek(numeroOriginal);
-                }
-                randomAccess.seek(numeroOriginal-= 2);
->>>>>>> 3bcbc8b90b44cc00d2207ffeb59aeab439d09bf5
 //                randomAccess.seek(numeroOriginal);
 //                System.out.println(randomAccess.readShort() + "Esse eh o texto");
                 short deslocamentoParaoBloco = randomAccess.readShort();
@@ -446,8 +403,7 @@ public class ArmazenamentoEmDisco {
     }
 
     public static void listRegister() {
-<<<<<<< HEAD
-       // System.out.println("\n Listando... ");
+        //System.out.println("\n Listando... ");
         entrada = new Scanner(System.in);
         String file = " " + "employee.txt";
         String registros = new String();
@@ -491,7 +447,7 @@ public class ArmazenamentoEmDisco {
                 meta[k] = m[i];
                 k++;
             }
-
+          
             int printreg = 0;
             for (int i = 1; i < reg.length; i++) {
                 if ((printreg % size) == 0) {
@@ -503,16 +459,6 @@ public class ArmazenamentoEmDisco {
                 printreg++;
             }
             System.out.printf("\n\n");
-=======
-        System.out.println("\n Listando... ");
-        entrada = new Scanner(System.in);
-        String file = " " + "employee.txt";
-        try {
-            raf = new RandomAccessFile(file, "r");
-            for (int i = 0; i < 4; i++) {
-                System.out.println(raf.readLine());
-            }
->>>>>>> 3bcbc8b90b44cc00d2207ffeb59aeab439d09bf5
         } catch (IOException ex) {
             Logger.getLogger(ArmazenamentoEmDisco.class.getName()).log(Level.SEVERE, null, ex);
         }

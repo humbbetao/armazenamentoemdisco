@@ -1,1 +1,1 @@
- id INTEGER name VARCHAR(255)) 
+ id INTEGER name VARCHAR(255 

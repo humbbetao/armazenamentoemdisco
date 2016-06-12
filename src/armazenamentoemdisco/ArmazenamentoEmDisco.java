@@ -5,6 +5,7 @@
  */
 package armazenamentoemdisco;
 
+import com.sun.org.apache.xalan.internal.xsltc.compiler.util.StringStack;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -19,6 +20,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,6 +42,47 @@ public class ArmazenamentoEmDisco {
 
     static String nomeDoArquivo = "createSql.txt";
     static RandomAccessFile raf;//cria o novo arquivo.txt
+    private static void readFromRandomAccessFile() throws FileNotFoundException, IOException
+	{
+		final int CHAR_SIZE = 2;   // 2 byte characters
+	      long byteNum;              // For the byte number
+	      char ch;                   // To hold a character
+	      
+	      // Open the file for reading.
+	      RandomAccessFile randomFile =
+	                 new RandomAccessFile(" employee.txt", "r");
+	      
+	      // Move to character 5. This is the 6th character
+	      // from the beginning of the file.
+	      byteNum = CHAR_SIZE * 5;
+	      randomFile.seek(byteNum);
+	      
+	      // Read the character stored at this location
+	      // and display it. Should be the letter f.
+	      ch = randomFile.readChar();
+	      System.out.println(ch);
+	      
+	      // Move to character 10 (the 11th character),
+	      // read the character, and display it.
+	      // Should be the letter k.
+	      byteNum = CHAR_SIZE * 10;
+	      randomFile.seek(byteNum);
+	      ch = randomFile.readChar();
+	      System.out.println(ch);
+	      
+	      // Move to character 3 (the 4th character),
+	      // read the character, and display it.
+	      // Should be the letter d.
+	      byteNum = CHAR_SIZE * 3;
+	      randomFile.seek(byteNum);
+	      ch = randomFile.readChar();
+	      System.out.println(ch);
+	      
+	      // Close the file.
+	      randomFile.close();
+	      System.out.println("   ***Done with reading from a random access binary file.");
+	}
+
 
     public static void main(String[] args) {
         // TODO code application logic here
@@ -179,7 +222,7 @@ public class ArmazenamentoEmDisco {
             try {
                 raf = new RandomAccessFile(arquivoBinario, "rw");//cria o novo arquivo.txt
 
-//            byte[] buffer = new byte[2 * 1024]; // cria o arquivo 
+//            byte[] buffer = new byte[2 * 1024]; // cria o arquivo              
                 raf.write(new byte[1]);
                 raf.write((byte) numeroDeItensArmazenados);
                 raf.write(new byte[1]);
@@ -200,8 +243,9 @@ public class ArmazenamentoEmDisco {
 
     public static void insertRegister() {
         System.out.println("Digite o nome do arquivo de Insert \n");
-        String nomeDoArquivoDeInsert = entrada.next();
-
+       // String nomeDoArquivoDeInsert = entrada.next();
+        String nomeDoArquivoDeInsert = "insert.sql";
+        
         File arquivoInsert = new File(nomeDoArquivoDeInsert);//cria o novo arquivo.txt
         FileReader inputReader = null;
         try {
@@ -236,14 +280,14 @@ public class ArmazenamentoEmDisco {
             items = items.replaceAll("\\(", "");
             items = items.trim();
             String[] itens = items.split("\\,");
-            System.out.println(Arrays.toString(itens));
+            System.out.println("Campos" +Arrays.toString(itens));
             String[] valoresDaTabela = camposNovos.split("\\(", 2);
 //            System.out.println(Arrays.toString(nomeDaTabela));
             String itemsDeDados = nomeDaTabela[1].replaceAll("\\)", "");
             itemsDeDados = itemsDeDados.replaceAll("\\(", "");
             itemsDeDados = itemsDeDados.trim();
             String[] itensDeDados = itemsDeDados.split("\\,");
-            System.out.println(Arrays.toString(itensDeDados));
+            System.out.println("Dados "+Arrays.toString(itensDeDados));
 
             //comecando a inserir no Arquivo;
             System.out.println("Esse eh o nome " + nomeDaTabela[0]);
@@ -267,23 +311,60 @@ public class ArmazenamentoEmDisco {
                 Logger.getLogger(ArmazenamentoEmDisco.class.getName()).log(Level.SEVERE, null, ex);
             }
 
+            String[] m = metadados.split(" ");
+            String dados=new String();
+                            int j=0;
+            for (int i = 0; i < m.length; i=i+2) {
+                if(j<itensDeDados.length){
+                    if(m[i] == null ? itensDeDados[j] == null : m[i].equals(itensDeDados[j])){
+                        dados=dados+itens[j]+","; 
+                        j++;
+                    }
+                 else{
+                     dados=dados+"0,";
+                    }
+                }
+                else{
+                    dados=dados+"0,";
+                }
+            }
+            String[] dadosprontos=dados.split(",");
+            for (int i = 0; i < dadosprontos.length; i++) {
+                System.out.println("dados: "+dadosprontos[i]);
+            }
             try {
                 RandomAccessFile randomAccess = new RandomAccessFile(nomeDaTabela[0] + ".txt", "rw");
+                randomAccess.seek(8);
+                for (int i = 0; i < dadosprontos.length; i++) {
+                    String[] d= dadosprontos[i].split("");
+                    for (int k = 0; k < d.length; k++) {
+                        randomAccess.write(new byte[1]);
+                        randomAccess.write(new String(d[k]).getBytes());
+                    }
+
+                }
+                randomAccess.close();
             } catch (FileNotFoundException ex) {
                 Logger.getLogger(ArmazenamentoEmDisco.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(ArmazenamentoEmDisco.class.getName()).log(Level.SEVERE, null, ex);
             }
-            String[] m = metadados.split(" ");
-//            for (String v : valoresDaTabela) {
-//                if(v.equals())
-//            }
-
-//            byte[] DadosCompletosParaEscrever = ;
         }
-
     }
 
     public static void listRegister() {
         System.out.println("\n Listando... ");
+        entrada= new Scanner(System.in);
+        String file = " "+"employee.txt";
+        try {
+           raf=new RandomAccessFile(file, "r");
+            for (int i = 0; i < 4; i++) {
+                System.out.println(raf.readLine());
+            }    
+        } 
+        catch (IOException ex) {
+            Logger.getLogger(ArmazenamentoEmDisco.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public static void removeRegister() {

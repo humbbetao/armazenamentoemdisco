@@ -330,10 +330,11 @@ public class ArmazenamentoEmDisco {
             }
             int tamanhoDosDados = dados.getBytes().length;
             String[] dadosprontos = dados.split(",");
+//             String completa=""
 //            for (int i = 0; i < dadosprontos.length; i++) {
-////                System.out.println("dados: " + dadosprontos[i]);
+//                += dadosprontos;
 //            }
-            System.out.println(Arrays.toString(dadosprontos));
+//            System.out.println(Arrays.toString(dadosprontos));
             try {
 
                 RandomAccessFile randomAccess = new RandomAccessFile(nomeDaTabela[0] + ".txt", "rw");
@@ -345,10 +346,12 @@ public class ArmazenamentoEmDisco {
                     int numeroOriginal = 6;
                     randomAccess.seek(numeroOriginal);
                     while ((tamanhoTotalLivre = randomAccess.readShort()) != 0) {
-                        randomAccess.seek(numeroOriginal + 2);
+//                        randomAccess.seek(numeroOriginal + 2);
+                        numeroOriginal += 2;
+//                        System.out.println("estaaqui");
                     }
-                    randomAccess.seek(numeroOriginal);
-                    tamanhoTotalLivre=randomAccess.readShort();
+                    randomAccess.seek(numeroOriginal-=2);
+                    tamanhoTotalLivre = randomAccess.readShort();
                 }
                 System.out.println("tamanhododadoslivre" + tamanhoTotalLivre);
                 System.out.println("tamanhododados" + tamanhoDosDados);
@@ -358,11 +361,13 @@ public class ArmazenamentoEmDisco {
                     String[] d = dadosprontos[i].split("");
 //                    System.out.println(Arrays.toString(d) + "FOi");
                     for (int k = 0; k < d.length; k++) {
-//                        randomAccess.write(new byte[1]);
+//                        randomAccess.write(new byte[1]);6
                         randomAccess.write(d[k].getBytes());
                     }
 
                 }
+
+                String novaDeEscrita = "";
 //                System.out.println(" foi");
                 randomAccess.seek(0);
                 //atualizao o numero de arquivos salvos;
@@ -379,14 +384,15 @@ public class ArmazenamentoEmDisco {
                 randomAccess.seek(numeroOriginal);
                 while (randomAccess.readShort() != zero) {
                     numeroOriginal += 2;
-                    randomAccess.seek(numeroOriginal);
+//                    System.out.println("Estaaqui2");
+//                    randomAccess.seek(numeroOriginal);
                 }
-                randomAccess.seek(numeroOriginal - 2);
+                randomAccess.seek(numeroOriginal-= 2);
 //                randomAccess.seek(numeroOriginal);
 //                System.out.println(randomAccess.readShort() + "Esse eh o texto");
                 short deslocamentoParaoBloco = randomAccess.readShort();
-                randomAccess.seek(numeroOriginal);
-                randomAccess.writeShort(deslocamentoParaoBloco);
+//                randomAccess.seek(numeroOriginal);
+                randomAccess.writeShort((tamanhoTotalLivre - tamanhoDosDados));
 
                 randomAccess.close();
             } catch (FileNotFoundException ex) {

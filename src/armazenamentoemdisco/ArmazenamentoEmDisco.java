@@ -1,3 +1,8 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package armazenamentoemdisco;
 
 import com.sun.org.apache.xalan.internal.xsltc.compiler.util.StringStack;
@@ -226,7 +231,6 @@ public class ArmazenamentoEmDisco {
                 raf.writeShort(deslocamentoParaPrimeiroByteLivre);
 //                raf.write(new byte[1]);
 //                raf.writeShort(delocamentoParaOPrimeiroRegistro);
-                raf.write((byte) '.');
 //            raf.flush();
                 raf.close();
                 //escreve no arquivo o cabecalho
@@ -360,10 +364,8 @@ public class ArmazenamentoEmDisco {
                     for (int k = 0; k < d.length; k++) {
 //                        randomAccess.write(new byte[1]);6
                         randomAccess.write(d[k].getBytes());
-
                     }
 
-                    //randomAccess.write((byte)',');
                 }
                 randomAccess.write((byte) ';');
                 String novaDeEscrita = "";
@@ -447,7 +449,7 @@ public class ArmazenamentoEmDisco {
                 meta[k] = m[i];
                 k++;
             }
-          
+
             int printreg = 0;
             for (int i = 1; i < reg.length; i++) {
                 if ((printreg % size) == 0) {

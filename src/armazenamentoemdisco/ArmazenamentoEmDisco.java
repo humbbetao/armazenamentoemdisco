@@ -107,8 +107,10 @@ public class ArmazenamentoEmDisco {
 //            System.out.println(s + "Nome");
             String[] create = s.split("CREATE TABLE");
             String[] nomeDaTabela = create[1].split("\\(", 2);
+
             System.out.println(nomeDaTabela[1]);
             nomeDaTabela[1] = nomeDaTabela[1].replaceAll(",", "");
+            nomeDaTabela[1] = nomeDaTabela[1].replaceAll("\\)", "");
             String[] itensDaTabela = nomeDaTabela[1].split(" ");
 //            System.out.println("itens " + Arrays.toString(itensDaTabela));
             File arquivoMetaDados = new File("Metadados" + nomeDaTabela[0] + ".txt");//cria o novo arquivo.txt
@@ -123,8 +125,8 @@ public class ArmazenamentoEmDisco {
             String metadadosDaTabela = "";
             for (String dados : itensDaTabela) {
 //                if (j % 2 == 0) {
-                    metadadosDaTabela += dados;
-                    metadadosDaTabela+= " ";
+                metadadosDaTabela += dados;
+                metadadosDaTabela += " ";
 //                    bufferWriter.
 //                }
                 j++;
@@ -197,6 +199,86 @@ public class ArmazenamentoEmDisco {
     }
 
     public static void insertRegister() {
+        System.out.println("Digite o nome do arquivo de Insert \n");
+        String nomeDoArquivoDeInsert = entrada.next();
+
+        File arquivoInsert = new File(nomeDoArquivoDeInsert);//cria o novo arquivo.txt
+        FileReader inputReader = null;
+        try {
+            inputReader = new FileReader(arquivoInsert);
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(ArmazenamentoEmDisco.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        BufferedReader bufferReader = new BufferedReader(inputReader);
+        String insert = "";
+        try {
+            String linha;
+            while ((linha = bufferReader.readLine()) != null) {
+                insert += linha;
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(ArmazenamentoEmDisco.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        String inputString = insert.replaceAll("\t", "");
+        inputString = inputString.replaceAll("\n", "");
+        String[] createTablesDiferentes = inputString.split("\\;");
+
+        for (String s : createTablesDiferentes) {
+//            System.out.println(s + "Nome");
+            String[] insertStrings = s.split("INSERT INTO");
+            String[] campos = insertStrings[1].split("values");
+            String valores = campos[1];
+//           System.out.println("Campos" + campos[0]);
+            String camposNovos = campos[0];
+            String[] nomeDaTabela = camposNovos.split("\\(", 2);
+//            System.out.println(Arrays.toString(nomeDaTabela));
+            String items = valores.replaceAll("\\)", "");
+            items = items.replaceAll("\\(", "");
+            items = items.trim();
+            String[] itens = items.split("\\,");
+            System.out.println(Arrays.toString(itens));
+            String[] valoresDaTabela = camposNovos.split("\\(", 2);
+//            System.out.println(Arrays.toString(nomeDaTabela));
+            String itemsDeDados = nomeDaTabela[1].replaceAll("\\)", "");
+            itemsDeDados = itemsDeDados.replaceAll("\\(", "");
+            itemsDeDados = itemsDeDados.trim();
+            String[] itensDeDados = itemsDeDados.split("\\,");
+            System.out.println(Arrays.toString(itensDeDados));
+
+            //comecando a inserir no Arquivo;
+            System.out.println("Esse eh o nome " + nomeDaTabela[0]);
+            File arquivoDeMetadados = new File("Metadados " + nomeDaTabela[0].trim() + ".txt");//cria o novo arquivo.txt
+            FileReader inputReaderMetadados = null;
+            try {
+                inputReaderMetadados = new FileReader(arquivoDeMetadados);
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(ArmazenamentoEmDisco.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            BufferedReader bufferReaderMetadados = new BufferedReader(inputReaderMetadados);
+            String metadados = "";
+            String linha;
+            try {
+                while ((linha = bufferReaderMetadados.readLine()) != null) {
+                    metadados += linha;
+                }
+                System.out.println(metadados + "Esse sao os metadados");
+
+            } catch (IOException ex) {
+                Logger.getLogger(ArmazenamentoEmDisco.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            try {
+                RandomAccessFile randomAccess = new RandomAccessFile(nomeDaTabela[0] + ".txt", "rw");
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(ArmazenamentoEmDisco.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            String[] m = metadados.split(" ");
+//            for (String v : valoresDaTabela) {
+//                if(v.equals())
+//            }
+
+//            byte[] DadosCompletosParaEscrever = ;
+        }
 
     }
 

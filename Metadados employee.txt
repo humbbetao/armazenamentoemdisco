@@ -1,0 +1,1 @@
+id INTEGER name VARCHAR(255) sex CHAR(1) status BOOLEAN) 

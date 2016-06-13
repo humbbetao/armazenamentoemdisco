@@ -48,7 +48,8 @@ public class ArmazenamentoEmDisco {
                     + "1 - Criar Arquivo;\n"
                     + "2 - Inserir Registros;\n"
                     + "3 - Listar Registros;\n"
-                    + "4 - Excluir Registros.\n");
+                    + "4 - Excluir Registros.\n"
+                    + "0 - Sair.\n");
             try {
                 numero = entrada.nextInt();
             } catch (NumberFormatException ex) {
@@ -67,6 +68,8 @@ public class ArmazenamentoEmDisco {
                 case 4:
                     removeRegister();
                     break;
+                case 0:
+                   return;
                 default:
                     System.out.println("Erro, Entrada Invalida\n");
                     break;

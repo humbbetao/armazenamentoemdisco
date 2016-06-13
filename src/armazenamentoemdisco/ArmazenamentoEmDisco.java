@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -42,46 +43,6 @@ public class ArmazenamentoEmDisco {
 
     static String nomeDoArquivo = "createSql.txt";
     static RandomAccessFile raf;//cria o novo arquivo.txt
-
-    private static void readFromRandomAccessFile() throws FileNotFoundException, IOException {
-        final int CHAR_SIZE = 2;   // 2 byte characters
-        long byteNum;              // For the byte number
-        char ch;                   // To hold a character
-
-        // Open the file for reading.
-        RandomAccessFile randomFile
-                = new RandomAccessFile(" employee.txt", "r");
-
-        // Move to character 5. This is the 6th character
-        // from the beginning of the file.
-        byteNum = CHAR_SIZE * 5;
-        randomFile.seek(byteNum);
-
-        // Read the character stored at this location
-        // and display it. Should be the letter f.
-        ch = randomFile.readChar();
-        System.out.println(ch);
-
-        // Move to character 10 (the 11th character),
-        // read the character, and display it.
-        // Should be the letter k.
-        byteNum = CHAR_SIZE * 10;
-        randomFile.seek(byteNum);
-        ch = randomFile.readChar();
-        System.out.println(ch);
-
-        // Move to character 3 (the 4th character),
-        // read the character, and display it.
-        // Should be the letter d.
-        byteNum = CHAR_SIZE * 3;
-        randomFile.seek(byteNum);
-        ch = randomFile.readChar();
-        System.out.println(ch);
-
-        // Close the file.
-        randomFile.close();
-        System.out.println("   ***Done with reading from a random access binary file.");
-    }
 
     public static void main(String[] args) {
         // TODO code application logic here
@@ -467,7 +428,288 @@ public class ArmazenamentoEmDisco {
     }
 
     public static void removeRegister() {
-        System.out.println("\n Digite o nome do registro a ser removido: ");
+        System.out.println("\n Digite o nome do arquivo com os deletes: ");
+        // String nomeDoArquivoDeInsert = entrada.next();
+        String nomeDoArquivoDeInsert = "delete.sql";
+        File arquivoInsert = new File(nomeDoArquivoDeInsert);//cria o novo arquivo.txt
+        FileReader inputReader = null;
+        try {
+            inputReader = new FileReader(arquivoInsert);
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(ArmazenamentoEmDisco.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        BufferedReader bufferReader = new BufferedReader(inputReader);
+        String insert = "";
+        try {
+            String linha;
+            while ((linha = bufferReader.readLine()) != null) {
+                insert += linha;
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(ArmazenamentoEmDisco.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        String inputString = insert.replaceAll("\t", "");
+        inputString = inputString.replaceAll("\n", "");
+        String[] insertInto = inputString.split("\\;");
+
+        for (String s : insertInto) {
+            String[] insertStrings = s.split("DELETE FROM");
+            System.out.println("insert: " + insertStrings[1]);
+            String[] campos = insertStrings[1].split("WHERE ");
+            String nomeDaTabela = campos[0];
+
+            File arquivoDeMetadados = new File("Metadados " + nomeDaTabela.trim() + ".txt");//cria o novo arquivo.txt
+            FileReader inputReaderMetadados = null;
+            try {
+                inputReaderMetadados = new FileReader(arquivoDeMetadados);
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(ArmazenamentoEmDisco.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            BufferedReader bufferReaderMetadados = new BufferedReader(inputReaderMetadados);
+            String metadados = "";
+            String linha;
+            try {
+                while ((linha = bufferReaderMetadados.readLine()) != null) {
+                    metadados += linha;
+                }
+//                System.out.println(metadados + "Esse sao os metadados");
+
+            } catch (IOException ex) {
+                Logger.getLogger(ArmazenamentoEmDisco.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            String[] m = metadados.split(" ");
+            int size = m.length / 2;
+            String[] meta = new String[size];
+            int k = 0;
+            for (int i = 0; i < m.length; i = i + 2) {
+                meta[k] = m[i];
+                k++;
+            }
+            System.out.println("Comparar: " + campos[1]);
+            String[] comparar = new String[2];
+
+            if (campos[1].contains("!=")) {
+                // System.out.println("Diferente");
+                comparar = campos[1].split("!=");
+                comparar[0] = comparar[0].trim();
+                comparar[1] = comparar[1].trim();
+                //System.out.println("Campos: " + comparar[0] + " " + comparar[1]);
+                entrada = new Scanner(System.in);
+                int c = 0;
+                String file = " " + nomeDaTabela.trim() + ".txt";
+                for (int i = 0; i < meta.length; i++) {
+                    if (comparar[0].contentEquals(meta[i])) {
+                        c = i;
+                    }
+                }
+                //System.out.println("C: " + c);
+                String registros = new String();
+                List<Integer> apagar = new ArrayList<Integer>();
+                try {
+                    raf = new RandomAccessFile(file, "rw");
+                    String dado = new String();
+                    for (int i = 0; i < raf.length(); i++) {
+                        dado = raf.readLine();
+                        //   System.out.println(""+dado);
+                        if (dado != null) {
+                            registros = registros + dado;
+                        }
+                    }
+                    //System.out.println("Registros: "+registros);
+                    String[] reg = registros.split(";");
+
+                    int regtotal = (reg.length - 1) / size;
+
+                    int regAapagar = regtotal - 1;
+                    for (int i = 1; i < reg.length; i = i + size) {
+                        if (!reg[i + c].contentEquals(comparar[1])) { //if da comparação
+                            apagar.add(regAapagar);
+                        }
+                        regAapagar--;
+                    }
+                    System.out.println("regs a apagar: " + apagar.toString());
+                    int tamReg = size * 2;
+
+                    //DELEÇÃO AQUI \/
+                    // apagar > Listas com os registro a serem apagados, 
+                    // te fala se é o primeiro, ou segundo etc...
+                    //  size > quantidade de campos da tabela
+                    listRegister();
+                    System.out.println("Registros apagados: " + apagar.size());
+
+                } catch (IOException ex) {
+                    Logger.getLogger(ArmazenamentoEmDisco.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+            } else if (campos[1].contains("=")) {
+                //System.out.println("Igual");
+                comparar = campos[1].split("=");
+                comparar[0] = comparar[0].trim();
+                comparar[1] = comparar[1].trim();
+                // System.out.println("Campos: " + comparar[0] + " " + comparar[1]);
+                entrada = new Scanner(System.in);
+                int c = 0;
+                String file = " " + nomeDaTabela.trim() + ".txt";
+                for (int i = 0; i < meta.length; i++) {
+                    if (comparar[0].contentEquals(meta[i])) {
+                        c = i;
+                    }
+                }
+                //System.out.println("C: " + c);
+                String registros = new String();
+                List<Integer> apagar = new ArrayList<Integer>();
+                try {
+                    raf = new RandomAccessFile(file, "rw");
+                    String dado = new String();
+                    for (int i = 0; i < raf.length(); i++) {
+                        dado = raf.readLine();
+                        //   System.out.println(""+dado);
+                        if (dado != null) {
+                            registros = registros + dado;
+                        }
+                    }
+                    //System.out.println("Registros: "+registros);
+                    String[] reg = registros.split(";");
+
+                    int regtotal = (reg.length - 1) / size;
+                    int regAapagar = regtotal - 1;
+                    for (int i = 1; i < reg.length; i = i + size) {
+                        if (reg[i + c].contentEquals(comparar[1])) { //if da comparação
+                            apagar.add(regAapagar);
+                        }
+                        regAapagar--;
+                    }
+                    System.out.println("regs a apagar: " + apagar.toString());
+
+                    int tamReg = size * 2;
+
+                    //DELEÇÃO AQUI \/                    
+                    // apagar > Listas com os registro a serem apagados                    
+                    //  size, quantidade de campos da tabela                    
+                    raf.seek(6);
+                    short pos = raf.readShort();
+                    for (int i = 0; i < apagar.size(); i++) {
+                        for (int j = 0; j < size; j++) {
+                            raf.write(new byte[1]);
+                        }
+                    }
+                    listRegister();
+                    System.out.println("Registros apagados: " + apagar.size());
+                } catch (IOException ex) {
+                    Logger.getLogger(ArmazenamentoEmDisco.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+            } else if (campos[1].contains(">")) {
+                //System.out.println("Maior");
+                comparar = campos[1].split(">");
+                comparar[0] = comparar[0].trim();
+                comparar[1] = comparar[1].trim();
+                //System.out.println("Campos: " + comparar[0] + " " + comparar[1]);
+                entrada = new Scanner(System.in);
+                int c = 0;
+                String file = " " + nomeDaTabela.trim() + ".txt";
+                for (int i = 0; i < meta.length; i++) {
+                    if (comparar[0].contentEquals(meta[i])) {
+                        c = i;
+                    }
+                }
+                //System.out.println("C: " + c);
+                String registros = new String();
+                List<Integer> apagar = new ArrayList<Integer>();
+                try {
+                    raf = new RandomAccessFile(file, "rw");
+                    String dado = new String();
+                    for (int i = 0; i < raf.length(); i++) {
+                        dado = raf.readLine();
+                        //   System.out.println(""+dado);
+                        if (dado != null) {
+                            registros = registros + dado;
+                        }
+                    }
+                    //System.out.println("Registros: "+registros);
+                    String[] reg = registros.split(";");
+
+                    int regtotal = (reg.length - 1) / size;
+                    int regAapagar = regtotal - 1;
+
+                    for (int i = 1; i < reg.length; i = i + size) {
+                        Integer lado1 = Integer.parseInt(reg[i + c]);
+                        Integer lado2 = Integer.parseInt(comparar[1]);
+                        if (lado1 > lado2) { //if da comparação
+                            apagar.add(regAapagar);
+                        }
+                        regAapagar--;
+                    }
+                    System.out.println("regs a apagar: " + apagar.toString());
+                    int tamReg = size * 2;
+
+                    //DELEÇÃO AQUI \/
+                    // apagar > Listas com os registro a serem apagados
+                    //  size, quantidade de campos da tabela
+                    listRegister();
+                    System.out.println("Registros apagados: " + apagar.size());
+                } catch (IOException ex) {
+                    Logger.getLogger(ArmazenamentoEmDisco.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+            } else if (campos[1].contains("<")) {
+                //System.out.println("Menor");
+                comparar = campos[1].split("<");
+                comparar[0] = comparar[0].trim();
+                comparar[1] = comparar[1].trim();
+                //System.out.println("Campos: " + comparar[0] + " " + comparar[1]);
+                entrada = new Scanner(System.in);
+                int c = 0;
+                String file = " " + nomeDaTabela.trim() + ".txt";
+                for (int i = 0; i < meta.length; i++) {
+                    if (comparar[0].contentEquals(meta[i])) {
+                        c = i;
+                    }
+                }
+                //System.out.println("C: " + c);
+                String registros = new String();
+                List<Integer> apagar = new ArrayList<Integer>();
+                try {
+                    raf = new RandomAccessFile(file, "rw");
+                    String dado = new String();
+                    for (int i = 0; i < raf.length(); i++) {
+                        dado = raf.readLine();
+                        //   System.out.println(""+dado);
+                        if (dado != null) {
+                            registros = registros + dado;
+                        }
+                    }
+                    //System.out.println("Registros: "+registros);
+                    String[] reg = registros.split(";");
+
+                    int regtotal = (reg.length - 1) / size;
+                    int regAapagar = regtotal - 1;
+
+                    for (int i = 1; i < reg.length; i = i + size) {
+                        Integer lado1 = Integer.parseInt(reg[i + c]);
+                        Integer lado2 = Integer.parseInt(comparar[1]);
+                        if (lado1 < lado2) { //if da comparação
+                            apagar.add(regAapagar);
+                        }
+                        regAapagar--;
+                    }
+                    System.out.println("regs a apagar: " + apagar.toString());
+                    int tamReg = size * 2;
+
+                    //DELEÇÃO AQUI \/
+                    // apagar > Listas com os registro a serem apagados
+                    //  size, quantidade de campos da tabela
+                    listRegister();
+                    System.out.println("Registros apagados: " + apagar.size());
+
+                } catch (IOException ex) {
+                    Logger.getLogger(ArmazenamentoEmDisco.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+            }
+
+        }
     }
 
 }
